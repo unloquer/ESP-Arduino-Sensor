@@ -22,15 +22,13 @@
 #include <ESP8266WebServer.h>
 // #include <ESP8266mDNS.h>
 
-#include "FS.h"
-
-#include "http.h"
-#include "rest.h"
+// Custom helper libraries
+#include "config.h"
 
 char ssid[] = "C3P";
 char password[] = "trespatios";
 
-ESP8266WebServer server ( 80 );
+ESP8266WebServer server(80);
 
 const int led = 13;
 const String BASE_URL = "http://104.131.1.214:3000/api";
@@ -45,6 +43,7 @@ boolean ackDevice();
 String macToString();
 void getRoot();
 void handleNotFound();
+void connectWifi(String ssid, String password);
 
 void getRoot() {
   if(signedIn) {
@@ -74,13 +73,14 @@ boolean ackDevice() {
 boolean existsSensor(String sensorID) {
   String mac = macToString();
 
-  const int bufferSize = JSON_OBJECT_SIZE(1);
+  /*const int bufferSize = JSON_OBJECT_SIZE(1);
   StaticJsonBuffer<bufferSize> jsonBuffer;
-  JsonObject& exists = jsonBuffer.createObject();
+  JsonObject& exists = jsonBuffer.createObject();*/
   // Response: { exists: true }
   String url("/sensors/"+sensorID+"/exists");
-  _getApi(url, exists, 0);
-  return exists["exists"];
+  // JsonObject *exists = _getApi(url);
+  // return exists["exists"];
+  return true;
 }
 
 boolean registerDevice() {
@@ -100,14 +100,55 @@ boolean registerDevice() {
   }
 }
 
-void connectWifi() {
-  WiFi.begin ( ssid, password );
+bool connectWifi(String ssid, String password) {
+  int retries = 0;
+  bool connected = false;
+  
+  WiFi.begin(ssid.c_str(), password.c_str());
+
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay(500);
+    Serial.print (".");
+    if(retries == 10) { break; }
+  }
+
+  if(retries < 10) { connected = true; }
+  return connected;
+}
+
+bool checkConfig() {
+  return true;
+}
+
+void registerBoard() {
+
+}
+
+void displayWifiSetup() {
+
 }
 
 void setup ( void ) {
-  pinMode ( led, OUTPUT );
-  digitalWrite ( led, 0 );
-  Serial.begin ( 115200 );
+  // We need to first check whether this is
+  // a new or existing deployment.
+  //
+  // Primero chequeamos si este es un despliegue
+  // nuevo o uno que ya existe.
+  bool hasConfig = checkConfig();
+  if(hasConfig) {
+    WifiConfig wifi = getWifiConfig();
+    bool connected = connectWifi(wifi.ssid, wifi.password);
+
+  } else {
+    displayWifiSetup();
+  }
+
+
+
+
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
+  Serial.begin(115200);
 
   Serial.println ( "" );
 
@@ -127,8 +168,8 @@ void setup ( void ) {
     Serial.println ( "MDNS responder started" );
   }*/
 
-  server.on ( "/", handleRoot );
-  server.on ( "/test.svg", drawGraph );
+  // server.on ( "/", handleRoot );
+  // server.on ( "/test.svg", drawGraph );
   server.on ( "/inline", []() {
     server.send ( 200, "text/plain", "this works as well" );
   });
@@ -136,16 +177,6 @@ void setup ( void ) {
   server.onNotFound ( handleNotFound );
   server.begin();
   Serial.println ( "HTTP server started" );
-}
-
-void setupFilesystem() {
-  // if(SPIFFS.begin()) {
-  //   if(SPIFFS.exists("/config")) {
-  //     SPIFFS.open("/config");
-  //   }
-  // }
-  //
-  // return
 }
 
 JsonObject* renderConfigJson() {

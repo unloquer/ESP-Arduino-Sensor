@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "util.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
@@ -19,7 +20,7 @@ String _get(String url) {
         return http.getString();
       }
     } else {
-      USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+      Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
 
     http.end();
