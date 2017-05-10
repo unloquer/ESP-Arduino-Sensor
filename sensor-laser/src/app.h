@@ -23,8 +23,9 @@ typedef struct {
 
 typedef struct {
   String name;
+  int data;
   void read() {
-    Serial.println("I read!");
+    Serial.println("I read!"+data);
   }
 } Sensor;
 
