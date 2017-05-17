@@ -1,9 +1,20 @@
-#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
 #include <WiFiManager.h>
+#include <FS.h>
+
+const String SENSOR_ID = "santiago";
+
+const String STR_COMMA = ",";
+const String STR_SLASH = "/";
+const String STR_DOT = ".";
+const String STR_COLON = ":";
+const String STR_NULL = "NULL";
+const String STR_ZERO = "0";
 
 typedef struct {
   String ssid;
@@ -12,13 +23,15 @@ typedef struct {
 } WifiConfig;
 
 typedef struct {
-  int date;
-  int time;
-  float altitude;
-  float course;
-  float speed;
-  float lat;
-  float lng;
+  int ready = 0;
+
+  String date;
+  String time;
+  double altitude;
+  double course;
+  double speed;
+  double lat;
+  double lng;
 } GPSData;
 
 typedef struct {
@@ -30,16 +43,51 @@ typedef struct {
 } Sensor;
 
 typedef struct {
+  int ready = 0;
+
   float temperature;
   float humidity;
 } DHT11Data;
 
 typedef struct {
+  int ready = 0;
+
+  int pm1;
+  int pm25;
+  int pm10;
+} PlantowerData;
+
+typedef struct {
   GPSData gps;
   DHT11Data dht11;
-} SensorData;
+  PlantowerData plantower;
+} AirData;
 
-void setupWifi(WifiConfig wifiConfig);
-void setupPlantower(Sensor s);
-void setupGPS(Sensor s);
-void setupDHT11(Sensor s);
+void setupWifi();
+void setupGPS();
+void setupPlantower();
+void setupDHT11();
+
+GPSData getGPSData();
+DHT11Data getDHT11Data();
+PlantowerData getPlantowerData();
+
+String csvFrame();
+void save();
+
+class GPSSensor {
+  private:
+  int readTime;
+
+  public:
+  GPSSensor();
+  GPSData data;
+  // SoftwareSerial serial;
+  SoftwareSerial *_serial;
+  // GPSSensor(SoftwareSerial *ss);
+  // GPSSensor(const int rx, const int tx);
+  void begin();
+  // void _begin();
+  void read();
+  // void _read();
+};

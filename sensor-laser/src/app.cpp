@@ -1,22 +1,33 @@
-#include "app.h"
+/*#include "app.h"
 
-Sensor plantower;
-Sensor gps;
-Sensor dht11;
-WifiConfig wifi;
+GPSSensor *gps;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  delay(1000);
 
-  setupWifi(wifi);
+  static const int gpsRXPin = 13, gpsTXPin = 7;
+  static const uint32_t GPSBaud = 9600;
 
-  setupPlantower(plantower);
-  setupGPS(gps);
-  setupDHT11(dht11);
+  // SoftwareSerial gpsSerial(gpsRXPin, gpsTXPin);
+  // GPSSensor gpsSensor(&gpsSerial);
+
+  // GPSSensor gpsSensor(gpsRXPin, gpsRXPin);
+
+  GPSSensor gpsSensor = GPSSensor();
+
+  gpsSensor.begin();
+  gps = &gpsSensor;
 }
 
 void loop() {
-  plantower.read();
-  gps.read();
-  dht11.read();
+  // Serial.print(".");
+  wdt_disable(); // Disable watchdog
+  gps->read();
+  // ;
+  delay(1000);
+  Serial.print("-");
+  // Serial.println(gps->data.lat);
+  // Serial.println(gps->data.lng);
 }
+*/
