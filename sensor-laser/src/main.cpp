@@ -1,13 +1,33 @@
 #include "app.h"
 
 const int DEBUG = 0;
+int INIT = 1;
+int READ_LOG = 1;
 
 GPSData gps;
 DHT11Data dht11;
 PlantowerData plantower;
 
+void readLog() {
+  Serial.println("Reading log ...");
+  File file = SPIFFS.open("log", "r");
+  while (file.available()) {
+    // Read all the data from the file and display it
+    Serial.write(file.read());
+  }
+}
+
+void startup() {
+  if(!INIT) { return; }
+  INIT = 0;
+
+  if(READ_LOG) {
+    readLog();
+  }
+}
+
 void setup() {
-  Serial.begin(115200); // Cambia para conectar directamente el PMS, hay que desconectarlo para subir un programa
+  Serial.begin(115200); 
   Serial.println("Starting...");
 
   SPIFFS.begin();
@@ -17,6 +37,8 @@ void setup() {
 }
 
 void loop() {
+  startup();
+
   gps = getGPSData();
   if(gps.ready) {
     dht11 = getDHT11Data();
@@ -48,7 +70,7 @@ String csvFrame() {
   // First datum is the sensor_id
   String frame = SENSOR_ID + STR_COMMA;
 
-  // Follows GPS data
+  // Add GPS data
   frame += gps.lat + STR_COMMA;
   frame += gps.lng + STR_COMMA;
   frame += gps.date + STR_COMMA;
@@ -57,7 +79,7 @@ String csvFrame() {
   frame += gps.course + STR_COMMA;
   frame += gps.speed + STR_COMMA;
 
-  // Follows DHT11
+  // Add DHT11 data
   if(dht11.ready) {
     frame += dht11.humidity + STR_COMMA;
     frame += dht11.temperature + STR_COMMA;
@@ -65,7 +87,7 @@ String csvFrame() {
     frame += STR_NULL + STR_COMMA + STR_NULL + STR_COMMA;
   }
 
-  // Follows PlantowerData
+  // Add Plantower data
   if(plantower.ready) {
     frame += plantower.pm1 + STR_COMMA;
     frame += plantower.pm25 + STR_COMMA;
@@ -77,11 +99,7 @@ String csvFrame() {
   return frame;
 }
 
-String readLog() {
-
-}
-
 void send() {
-  String data = readLog();
-
+  String url = "http://unloquer-mongo:3000/api/v0/air";
+  postCsvFile(url, "log");
 }

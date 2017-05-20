@@ -74,6 +74,7 @@ PlantowerData getPlantowerData();
 
 String csvFrame();
 void save();
+int postCsvFile(String url, String filename);
 
 class GPSSensor {
   private:

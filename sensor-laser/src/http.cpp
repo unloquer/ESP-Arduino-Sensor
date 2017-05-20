@@ -40,3 +40,26 @@ String _post(String url, String json) {
     http.end();
   }
 }
+
+int postCsvFile(String url, String filename) {
+  http.begin(url);
+  http.addHeader("Content-Type", "application/csv");
+
+  int content_length = 0;
+
+  File file = SPIFFS.open(filename, "a+");
+  content_length = file.size();
+
+  http.addHeader("Content-Length", String(content_length));
+  int httpCode = http.POST((String) file);
+  if(httpCode > 0) {
+    String payload = http.getString();
+    Serial.println(payload);
+  }
+  else {
+    Serial.print("[HTTP] failed, error: ");Serial.println(http.errorToString(httpCode).c_str());
+  }
+  http.end();
+
+  return httpCode;
+}
