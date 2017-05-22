@@ -1,8 +1,11 @@
 #include "app.h"
 
-const int DEBUG = 0;
 int INIT = 1;
-int READ_LOG = 1;
+const int DEBUG = 0;
+const int READ_LOG = 1;
+const int DELETE_LOG = 0;
+const int SEND_LOG = 0;
+const int SEND_RECORD = 1;
 
 GPSData gps;
 DHT11Data dht11;
@@ -11,10 +14,34 @@ PlantowerData plantower;
 void readLog() {
   Serial.println("Reading log ...");
   File file = SPIFFS.open("log", "r");
+  String line = "";
   while (file.available()) {
     // Read all the data from the file and display it
-    Serial.write(file.read());
+
+    char c = file.read();
+    if(c == '\r') {
+      if(!line.endsWith("NULL,")) {
+        Serial.println(line);
+        if(SEND_RECORD) {
+          postCsv("http://192.168.0.18:3000/api/v0/air.csv", line);
+        }
+      }
+
+      // Discard the \n, which is the next byte
+      file.read();
+      line = "";
+    } else {
+      line += String(c);
+    }
   }
+}
+
+void deleteLog() {
+}
+
+void sendLog() {
+  String url = "http://192.168.0.18:3000/api/v0/air.csv";
+  postCsvFile(url, "log");
 }
 
 void startup() {
@@ -24,6 +51,14 @@ void startup() {
   if(READ_LOG) {
     readLog();
   }
+
+  if(SEND_LOG) {
+    sendLog();
+  }
+
+  if(DELETE_LOG) {
+    deleteLog();
+  }
 }
 
 void setup() {
@@ -31,7 +66,7 @@ void setup() {
   Serial.println("Starting...");
 
   SPIFFS.begin();
-  // setupWifi();
+  setupWifi();
   setupGPS();
   setupPlantower();
 }
@@ -97,9 +132,4 @@ String csvFrame() {
   }
 
   return frame;
-}
-
-void send() {
-  String url = "http://unloquer-mongo:3000/api/v0/air";
-  postCsvFile(url, "log");
 }
