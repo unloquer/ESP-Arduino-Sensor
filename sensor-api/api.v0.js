@@ -16,9 +16,11 @@ function post(model, data) {
   });
 }
 
-function get() {
+function get(model, cb) {
   AirPost.find((err, data) => {
+    err && cb(err);
     err && console.log(err);
+    data && cb(null, data);
     data && console.log(data);
   });
 }

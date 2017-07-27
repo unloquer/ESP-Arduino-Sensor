@@ -57,15 +57,15 @@ app.post('/api/v0/air.csv', (req, res) => {
   res.send({ ok: 1 });
 });
 
-app.get('api/v0/air/:sensor_id', (req, res) => {
-  get('air', req.params.sensor_id, (err, json) => {
+app.get('/api/v0/air', (req, res) => {
+  get('air', (err, json) => {
     if(err) { return res.send(500) }
     res.send(json);
   });
 });
 
-app.get('api/v0/air', (req, res) => {
-  get('air', (err, json) => {
+app.get('/api/v0/air/:sensor_id', (req, res) => {
+  get('air', req.params.sensor_id, (err, json) => {
     if(err) { return res.send(500) }
     res.send(json);
   });
