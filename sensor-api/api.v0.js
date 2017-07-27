@@ -6,6 +6,7 @@ module.exports = { post, get };
 var AirPost = mongoose.model('AirPost', AirPostSchema());
 
 function post(model, data) {
+  console.log(data);
   var Post = {
     air: AirPost
   }[model];

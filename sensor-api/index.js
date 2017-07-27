@@ -45,8 +45,8 @@ app.post('/api/v0/air.csv', (req, res) => {
   var csv = req.body;
   var rows = csv.split("\n");
   var data = {};
-  rows.forEach((r, i) => {
-    fields.forEach((f) => {
+  rows.forEach((r) => {
+    fields.forEach((f, i) => {
       data[f] = r[i];
     });
   });
