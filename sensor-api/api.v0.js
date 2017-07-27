@@ -17,7 +17,10 @@ function post(model, data) {
 }
 
 function get() {
-
+  AirPost.find((err, data) => {
+    err && console.log(err);
+    data && console.log(data);
+  });
 }
 
 function AirPostSchema() {

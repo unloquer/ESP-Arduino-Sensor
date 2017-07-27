@@ -64,7 +64,11 @@ app.get('api/v0/air/:sensor_id', (req, res) => {
   });
 });
 
-app.get('api/v0/air/:sensor_id', (req, res) => {
+app.get('api/v0/air', (req, res) => {
+  get('air', (err, json) => {
+    if(err) { return res.send(500) }
+    res.send(json);
+  });
 });
 
 app.listen(3000, () => {
