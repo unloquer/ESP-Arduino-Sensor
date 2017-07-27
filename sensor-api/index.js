@@ -20,8 +20,25 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 });
 
-const fields = ["lat","lng","date","time","altitude","course","speed","humidity",
+const fields = [
+  "id", "lat","lng","date","time","altitude","course","speed","humidity",
   "temperature","pm1","pm25","pm10"];
+
+const fieldTypes = {
+  id: (i) => i,
+  lat: (i) => parseFloat(i),
+  lng: (i) => parseFloat(i),
+  date: (i) => new Date(i),
+  time: (i) => i,
+  altitude: (i) => parseFloat(i),
+  course: (i) => parseFloat(i),
+  speed: (i) => parseFloat(i),
+  humidity: (i) => parseFloat(i),
+  temperature: (i) => parseFloat(i),
+  pm1: (i) => parseInt(i),
+  pm25: (i) => parseInt(i),
+  pm10: (i) => parseInt(i)
+};
 
 /*
 {
@@ -43,17 +60,16 @@ app.post('/api/v0/air.csv', (req, res) => {
   console.log("Posting AIR data ...");
   console.log(req.body);
   var csv = req.body;
-  var rows = csv.split("\n");
+  var rows = csv.split("\n").map(r => r.split(','));
   var data = {};
+  console.log(rows);
   rows.forEach((r) => {
     fields.forEach((f, i) => {
-      data[f] = r[i];
+      data[f] = fieldTypes[f](r[i]) || null;
     });
   });
 
-  console.log(data);
-
-  //post('air', data);
+  post('air', data);
   res.send({ ok: 1 });
 });
 

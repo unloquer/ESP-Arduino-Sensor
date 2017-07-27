@@ -30,9 +30,8 @@ function AirPostSchema() {
   return {
     "lat": Number,
     "lng": Number,
-    "date": String,
+    "date": Date,
     "time": String,
-    "timestamp": Date,
     "altitude": Number,
     "course": Number,
     "speed": Number,
