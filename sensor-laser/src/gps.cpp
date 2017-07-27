@@ -28,8 +28,10 @@ GPSData parseGPSData() {
 
   if (gpsParser.location.isValid()) {
     data.ready = 1;
+
     data.lat = gpsParser.location.lat();
     data.lng = gpsParser.location.lng();
+
     Serial.print("lat: ");
     Serial.println(data.lat);
     Serial.print("lng: ");

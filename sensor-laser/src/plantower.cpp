@@ -8,7 +8,7 @@ int PM01Value = 0;          //define PM1.0 value of the air detector module
 int PM2_5Value = 0;         //define PM2.5 value of the air detector module
 int PM10Value = 0;         //define PM10 value of the air detector module
 
-SoftwareSerial pmsSerial(12, 6);
+SoftwareSerial pmsSerial(5, 6);
 
 char checkValue(unsigned char *thebuf, char leng) {
   char receiveflag = 0;
@@ -51,10 +51,14 @@ PlantowerData readPlantower() {
   PlantowerData data;
 
   if(pmsSerial.find(0x42)) {    //start to read when detect 0x42
+    Serial.println("has 0x42");
+
     pmsSerial.readBytes(buf,LENG);
 
     if(buf[0] == 0x4d){
+      Serial.println("has 0x4d");
       if(checkValue(buf,LENG)){
+        Serial.println("value checked");
         PM01Value = parsePM01(buf); //count PM1.0 value of the air detector module
         PM2_5Value = parsePM2_5(buf);//count PM2.5 value of the air detector module
         PM10Value = parsePM10(buf); //count PM10 value of the air detector module

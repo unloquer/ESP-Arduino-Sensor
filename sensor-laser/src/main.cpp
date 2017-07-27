@@ -20,10 +20,10 @@ void readLog() {
 
     char c = file.read();
     if(c == '\r') {
-      if(!line.endsWith("NULL,")) {
+      if(!line.endsWith("NULL")) {
         Serial.println(line);
         if(SEND_RECORD) {
-          postCsv("http://192.168.0.18:3000/api/v0/air.csv", line);
+          postCsv("http://45.55.34.88:3000/api/v0/air.csv", line);
         }
       }
 
@@ -37,6 +37,7 @@ void readLog() {
 }
 
 void deleteLog() {
+  SPIFFS.remove("log");
 }
 
 void sendLog() {
@@ -98,7 +99,7 @@ void save() {
 
 String csvFrame() {
   /* CSV is ordered as:
-   "lat","lng","date","time","altitude","course","speed","humidity",
+   "id","lat","lng","date","time","altitude","course","speed","humidity",
    "temperature","pm1","pm25","pm10"
   */
 
@@ -106,8 +107,12 @@ String csvFrame() {
   String frame = SENSOR_ID + STR_COMMA;
 
   // Add GPS data
-  frame += gps.lat + STR_COMMA;
-  frame += gps.lng + STR_COMMA;
+  char strlat[25],strlng[25];
+  dtostrf(gps.lat, 3, 6, strlat);
+  dtostrf(gps.lng, 3, 6, strlng);
+
+  frame += strlat + STR_COMMA;
+  frame += strlng + STR_COMMA;
   frame += gps.date + STR_COMMA;
   frame += gps.time + STR_COMMA;
   frame += gps.altitude + STR_COMMA;
@@ -128,7 +133,7 @@ String csvFrame() {
     frame += plantower.pm25 + STR_COMMA;
     frame += plantower.pm10;
   } else {
-    frame += STR_NULL + STR_COMMA + STR_NULL + STR_COMMA;
+    frame += STR_NULL + STR_COMMA + STR_NULL + STR_COMMA + STR_NULL;
   }
 
   return frame;
