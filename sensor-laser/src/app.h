@@ -6,6 +6,7 @@
 #include <SoftwareSerial.h>
 #include <WiFiManager.h>
 #include <FS.h>
+#include <FastLED.h>
 
 const String SENSOR_ID = "santiago";
 
@@ -63,20 +64,11 @@ typedef struct {
   PlantowerData plantower;
 } AirData;
 
-typedef struct {
-  CRGB::Green ok;
-  CRGB::Orange notGood;
-  CRGB::Red dangerous;
-  CRGB::Purple harmful;
-} Alert;
-
-
-
-
 void setupWifi();
 void setupGPS();
 void setupPlantower();
 void setupDHT11();
+void setupLeds();
 
 GPSData getGPSData();
 DHT11Data getDHT11Data();
@@ -87,7 +79,9 @@ void save();
 int postCsvFile(String url, String filename);
 int postCsv(String url, String csv);
 
-class GPSSensor {
+void ledParticulateQuality(PlantowerData data);
+
+/*class GPSSensor {
   private:
   int readTime;
 
@@ -102,4 +96,4 @@ class GPSSensor {
   // void _begin();
   void read();
   // void _read();
-};
+  };*/

@@ -10,6 +10,7 @@ const int SEND_RECORD = 1;
 GPSData gps;
 DHT11Data dht11;
 PlantowerData plantower;
+PlantowerData plantowerData;
 
 #include <DoubleResetDetector.h>
 
@@ -76,9 +77,12 @@ void syncLog() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Starting...");
+  Serial.println("\nStarting ...");
 
   SPIFFS.begin();
+  setupLeds();
+  setupGPS();
+  setupPlantower();
 
   if (drd.detectDoubleReset()) {
     Serial.println("Connecting to network ...");
@@ -86,8 +90,6 @@ void setup() {
     syncLog();
   }
 
-  setupGPS();
-  setupPlantower();
 }
 
 void loop() {
@@ -95,7 +97,15 @@ void loop() {
   if(gps.ready) {
     dht11 = getDHT11Data();
     plantower = getPlantowerData();
-    save();
+
+    if(plantower.ready) {
+      plantowerData = plantower;
+      save();
+    }
+
+    if(plantowerData.ready) {
+      ledParticulateQuality(plantowerData);
+    }
   }
 
   drd.loop();

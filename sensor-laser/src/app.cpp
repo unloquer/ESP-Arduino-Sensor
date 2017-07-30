@@ -9,7 +9,7 @@ void setup() {
   static const int gpsRXPin = 13, gpsTXPin = 7;
   static const uint32_t GPSBaud = 9600;
 
-  // SoftwareSerial gpsSerial(gpsRXPin, gpsTXPin);
+  // SoftwareSerial gpsSerial(gpsRXPin, gpshTXPin);
   // GPSSensor gpsSensor(&gpsSerial);
 
   // GPSSensor gpsSensor(gpsRXPin, gpsRXPin);
