@@ -3,13 +3,24 @@
 int INIT = 1;
 const int DEBUG = 0;
 const int READ_LOG = 1;
-const int DELETE_LOG = 0;
+const int DELETE_LOG = 1;
 const int SEND_LOG = 0;
 const int SEND_RECORD = 1;
 
 GPSData gps;
 DHT11Data dht11;
 PlantowerData plantower;
+
+#include <DoubleResetDetector.h>
+
+// Number of seconds after reset during which a 
+// subseqent reset will be considered a double reset.
+#define DRD_TIMEOUT 100
+
+// RTC Memory Address for the DoubleResetDetector to use
+#define DRD_ADDRESS 0
+
+DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 
 void readLog() {
   Serial.println("Reading log ...");
@@ -21,7 +32,7 @@ void readLog() {
     char c = file.read();
     if(c == '\r') {
       if(!line.endsWith("NULL")) {
-        Serial.println(line);
+        Serial.println("Posting: "+line);
         if(SEND_RECORD) {
           postCsv("http://45.55.34.88:3000/api/v0/air.csv", line);
         }
@@ -37,6 +48,7 @@ void readLog() {
 }
 
 void deleteLog() {
+  Serial.println("Deleting log");
   SPIFFS.remove("log");
 }
 
@@ -45,7 +57,7 @@ void sendLog() {
   postCsvFile(url, "log");
 }
 
-void startup() {
+void syncLog() {
   if(!INIT) { return; }
   INIT = 0;
 
@@ -63,24 +75,30 @@ void startup() {
 }
 
 void setup() {
-  Serial.begin(115200); 
+  Serial.begin(115200);
   Serial.println("Starting...");
 
   SPIFFS.begin();
-  setupWifi();
+
+  if (drd.detectDoubleReset()) {
+    Serial.println("Connecting to network ...");
+    setupWifi();
+    syncLog();
+  }
+
   setupGPS();
   setupPlantower();
 }
 
 void loop() {
-  startup();
-
   gps = getGPSData();
   if(gps.ready) {
     dht11 = getDHT11Data();
     plantower = getPlantowerData();
     save();
   }
+
+  drd.loop();
 }
 
 void save() {

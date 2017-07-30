@@ -63,6 +63,16 @@ typedef struct {
   PlantowerData plantower;
 } AirData;
 
+typedef struct {
+  CRGB::Green ok;
+  CRGB::Orange notGood;
+  CRGB::Red dangerous;
+  CRGB::Purple harmful;
+} Alert;
+
+
+
+
 void setupWifi();
 void setupGPS();
 void setupPlantower();
