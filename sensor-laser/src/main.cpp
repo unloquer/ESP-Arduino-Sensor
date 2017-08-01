@@ -27,7 +27,9 @@ void readLog() {
   Serial.println("Reading log ...");
   File file = SPIFFS.open("log", "r");
   String line = "";
+  if (!file) Serial.println("file open failed");  // Check for errors
   while (file.available()) {
+    wdt_disable();
     // Read all the data from the file and display it
 
     char c = file.read();
@@ -45,6 +47,7 @@ void readLog() {
     } else {
       line += String(c);
     }
+    wdt_enable(1000);
   }
 }
 
@@ -83,7 +86,8 @@ void setup() {
   setupLeds();
   setupGPS();
   setupPlantower();
-
+  setupDHT11();
+  
   if (drd.detectDoubleReset()) {
     Serial.println("Connecting to network ...");
     setupWifi();

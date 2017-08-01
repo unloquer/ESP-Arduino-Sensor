@@ -7,8 +7,9 @@
 #include <WiFiManager.h>
 #include <FS.h>
 #include <FastLED.h>
+#include "DHT.h"
 
-const String SENSOR_ID = "santiago";
+const String SENSOR_ID = "brolin";
 
 const String STR_COMMA = ",";
 const String STR_SLASH = "/";
