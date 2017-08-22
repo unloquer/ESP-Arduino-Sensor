@@ -92,7 +92,7 @@ GPSData parseGPSData() {
 }
 
 GPSData getGPSData() {
-  readGPS(5000);
+  readGPS(800);
   GPSData data = parseGPSData();
   return data;
 }

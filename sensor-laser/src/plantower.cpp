@@ -47,48 +47,54 @@ int parsePM10(unsigned char *thebuf) {
   return PM10Val;
 }
 
-PlantowerData readPlantower() {
+
+PlantowerData readPlantower(unsigned long ms) {
   PlantowerData data;
 
-  if(pmsSerial.find(0x42)) {    //start to read when detect 0x42
-    Serial.println("has 0x42");
+  unsigned long start = millis();
+  wdt_disable();
 
-    pmsSerial.readBytes(buf,LENG);
+  do {
+    Serial.print("Timestamp: ");
+    Serial.println(millis() - start);
+    //while(pmsSerial.available()) {
+      if(pmsSerial.find(0x42)) {    //start to read when detect 0x42
+        Serial.println("has 0x42");
 
-    if(buf[0] == 0x4d){
-      Serial.println("has 0x4d");
-      if(checkValue(buf,LENG)){
-        Serial.println("value checked");
-        PM01Value = parsePM01(buf); //count PM1.0 value of the air detector module
-        PM2_5Value = parsePM2_5(buf);//count PM2.5 value of the air detector module
-        PM10Value = parsePM10(buf); //count PM10 value of the air detector module
+        pmsSerial.readBytes(buf,LENG);
 
-        data.ready = 1;
-        data.pm1 = PM01Value;
-        data.pm10 = PM10Value;
-        data.pm25 = PM2_5Value;
+        if(buf[0] == 0x4d){
+          Serial.println("has 0x4d");
+          if(checkValue(buf,LENG)){
+            Serial.println("value checked");
+            PM01Value = parsePM01(buf); //count PM1.0 value of the air detector module
+            PM2_5Value = parsePM2_5(buf);//count PM2.5 value of the air detector module
+            PM10Value = parsePM10(buf); //count PM10 value of the air detector module
+
+            data.ready = 1;
+            data.pm1 = PM01Value;
+            data.pm10 = PM10Value;
+            data.pm25 = PM2_5Value;
+          }
+        }
       }
-    }
-  }
+      // }
+  } while (millis() - start < ms);
 
-  static unsigned long OledTimer = millis();
+  wdt_enable(1000);
 
-  if(millis() - OledTimer >= 5000) {
-    OledTimer = millis();
+  Serial.print("PM1.0: ");
+  Serial.print(PM01Value);
+  Serial.println(" ug/m3");
 
-    Serial.print("PM1.0: ");
-    Serial.print(PM01Value);
-    Serial.println(" ug/m3");
+  Serial.print("PM2.5: ");
+  Serial.print(PM2_5Value);
+  Serial.println(" ug/m3");
 
-    Serial.print("PM2.5: ");
-    Serial.print(PM2_5Value);
-    Serial.println(" ug/m3");
-
-    Serial.print("PM1 0: ");
-    Serial.print(PM10Value);
-    Serial.println(" ug/m3");
-    Serial.println();
-  }
+  Serial.print("PM1 0: ");
+  Serial.print(PM10Value);
+  Serial.println(" ug/m3");
+  Serial.println();
 
   return data;
 }
@@ -100,6 +106,6 @@ void setupPlantower() {
 }
 
 PlantowerData getPlantowerData() {
-  PlantowerData data = readPlantower();
+  PlantowerData data = readPlantower(1000);
   return data;
 }

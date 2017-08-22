@@ -98,8 +98,8 @@ void setup() {
 
 void loop() {
   gps = getGPSData();
-  if(gps.ready) {
-    dht11 = getDHT11Data();
+   if(gps.ready) {
+  dht11 = getDHT11Data();
     plantower = getPlantowerData();
 
     if(plantower.ready) {
@@ -110,7 +110,7 @@ void loop() {
     if(plantowerData.ready) {
       ledParticulateQuality(plantowerData);
     }
-  }
+   }
 
   drd.loop();
 }
