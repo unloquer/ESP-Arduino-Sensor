@@ -1,6 +1,11 @@
 #include "app.h"
 
-void configModeCallback (WiFiManager *myWiFiManager) {
+AsyncWebServer server(80);
+DNSServer dns;
+
+
+
+void configModeCallback (AsyncWiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   // print the ssid that we should connect to to configure the ESP8266
@@ -8,10 +13,21 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
+
 void setupWifi() {
+  // respond to GET requests on URL /heap
+  server.on("/log", HTTP_GET, [](AsyncWebServerRequest *request){
+    //Download index.htm
+    request->_tempFile = SPIFFS.open("datalog.txt", "r");
+    request->send(request->_tempFile, request->_tempFile.name(), String(), true);
+    //AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "log", String(), true);
+    });
+
   //WiFiManager
   //Local intialization. Once its business is done, there is no need to keep it around
-  WiFiManager wifiManager;
+  //Download index.htm
+  // respond to GET requests on URL /heap
+  AsyncWiFiManager wifiManager(&server,&dns);
   //reset settings - for testing
   //wifiManager.resetSettings();
 

@@ -1,10 +1,15 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266WebServer.h>
+/* #include <ESP8266WiFi.h> */
+/* #include <ESP8266WiFiMulti.h> */
+/* #include <ESP8266HTTPClient.h> */
+/* #include <ESP8266WebServer.h> */
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
-#include <WiFiManager.h>
+#include <Hash.h>
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWiFiManager.h>
+#include <ESP8266HTTPClient.h>
+//#include <SPIFFSEditor.h>
 #include <FS.h>
 #include <FastLED.h>
 #include "DHT.h"
