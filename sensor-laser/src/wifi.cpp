@@ -18,7 +18,7 @@ void setupWifi() {
   // respond to GET requests on URL /heap
   server.on("/log", HTTP_GET, [](AsyncWebServerRequest *request){
     //Download index.htm
-    request->_tempFile = SPIFFS.open("log", "r");
+    request->_tempFile = SPIFFS.open("datalog.txt", "r");
     request->send(request->_tempFile, request->_tempFile.name(), String(), true);
     //AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "log", String(), true);
     });
@@ -29,7 +29,7 @@ void setupWifi() {
   // respond to GET requests on URL /heap
   AsyncWiFiManager wifiManager(&server,&dns);
   //reset settings - for testing
-  wifiManager.resetSettings();
+  //wifiManager.resetSettings();
 
   //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
   wifiManager.setAPCallback(configModeCallback);

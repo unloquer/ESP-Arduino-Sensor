@@ -25,7 +25,7 @@ DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
 
 void readLog() {
   Serial.println("Reading log ...");
-  File file = SPIFFS.open("log", "r");
+  File file = SPIFFS.open("datalog.txt", "r");
   String line = "";
   if (!file) Serial.println("file open failed");  // Check for errors
   while (file.available()) {
@@ -53,7 +53,7 @@ void readLog() {
 
 void deleteLog() {
   Serial.println("Deleting log");
-  SPIFFS.remove("log");
+  SPIFFS.remove("datalog.txt");
 }
 
 void sendLog() {
@@ -93,30 +93,28 @@ void setup() {
     setupWifi();
     syncLog();
   }
-
 }
 
 void loop() {
   gps = getGPSData();
-   if(gps.ready) {
+  plantower = getPlantowerData();
   dht11 = getDHT11Data();
-    plantower = getPlantowerData();
 
-    if(plantower.ready) {
-      plantowerData = plantower;
-      save();
-    }
-
+  if(plantower.ready) {
+    plantowerData = plantower;
     if(plantowerData.ready) {
       ledParticulateQuality(plantowerData);
+      if(gps.ready) {
+        save();
+      }
     }
-   }
+  }
 
   drd.loop();
 }
 
 void save() {
-  char filename [] = "log";                     // Assign a filename or use the format e.g. SD.open("datalog.txt",...);
+  char filename [] = "datalog.txt";                     // Assign a filename or use the format e.g. SD.open("datalog.txt",...);
   File file = SPIFFS.open(filename, "a+");        // Open a file for reading and writing (appending)
   if (!file) {
     Serial.println("file open failed");   // Check for errors
