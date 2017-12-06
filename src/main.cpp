@@ -2,7 +2,7 @@
 
 int INIT = 1;
 const int DEBUG = 0;
-const int READ_LOG = 1;
+const int READ_LOG = 0;
 const int DELETE_LOG = 1;
 const int SEND_LOG = 0;
 const int SEND_RECORD = 1;
