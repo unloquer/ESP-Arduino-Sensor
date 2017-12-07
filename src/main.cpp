@@ -10,11 +10,10 @@ const int SEND_RECORD = 1;
 GPSData gps;
 DHT11Data dht11;
 PlantowerData plantower;
-PlantowerData plantowerData;
 
 #include <DoubleResetDetector.h>
 
-// Number of seconds after reset during which a 
+// Number of seconds after reset during which a
 // subseqent reset will be considered a double reset.
 #define DRD_TIMEOUT 100
 
@@ -87,7 +86,7 @@ void setup() {
   setupGPS();
   setupPlantower();
   setupDHT11();
-  
+
   if (drd.detectDoubleReset()) {
     Serial.println("Connecting to network ...");
     setupWifi();
@@ -103,12 +102,9 @@ void loop() {
     plantower = getPlantowerData();
 
     if(plantower.ready) {
-      plantowerData = plantower;
-    }
-
-    if(plantowerData.ready) {
       save();
-      ledParticulateQuality(plantowerData);
+      ledParticulateQuality(plantower);
+
       String frame = influxFrame();
       post2Influx("http://aqa.unloquer.org:8086/write?db=aqa", frame);
     }
@@ -172,6 +168,7 @@ String csvFrame() {
 
   return frame;
 }
+
 String influxFrame() {
   /* CSV is ordered as:
    "id","lat","lng","date","time","altitude","course","speed","humidity",

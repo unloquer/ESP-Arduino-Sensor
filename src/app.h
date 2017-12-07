@@ -9,7 +9,7 @@
 #include <FastLED.h>
 #include "DHT.h"
 
-const String SENSOR_ID = "estacion_floresta";
+const String SENSOR_ID = "florida_nueva";
 
 const String STR_COMMA = ",";
 const String STR_SLASH = "/";

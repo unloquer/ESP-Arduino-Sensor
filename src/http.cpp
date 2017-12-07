@@ -76,7 +76,7 @@ int postCsvFile(String url, String filename) {
   Serial.println(content_length);
 
   String data = "";
-  char *_data; 
+  char *_data;
   Serial.println("Reading file ...");
   while(file.available()) {
     Serial.print(".");
@@ -131,13 +131,13 @@ int post2Influx(String url, String load) {
   if(httpCode > 0) {
     String payload = http.getString();
     Serial.println(payload);
-    Serial.println("load  sent successfully!");
+    Serial.println("load sent successfully!");
   } else {
     Serial.print("[HTTP] failed, error;;;: ");
     Serial.println(http.errorToString(httpCode).c_str());
   }
-  
+
   http.end();
   return httpCode;
-  
+
 }

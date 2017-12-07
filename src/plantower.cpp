@@ -90,8 +90,7 @@ PlantowerData readPlantower(unsigned long ms) {
   Serial.print(PM10Value);
   Serial.println(" ug/m3");
   Serial.println();
-
-
+  
   return data;
 }
 
