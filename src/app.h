@@ -9,7 +9,7 @@
 #include <FastLED.h>
 #include "DHT.h"
 
-const String SENSOR_ID = "brolin";
+const String SENSOR_ID = "estacion_floresta";
 
 const String STR_COMMA = ",";
 const String STR_SLASH = "/";
@@ -17,6 +17,7 @@ const String STR_DOT = ".";
 const String STR_COLON = ":";
 const String STR_NULL = "NULL";
 const String STR_ZERO = "0";
+const String STR_SPACE = " ";
 
 typedef struct {
   String ssid;
@@ -76,9 +77,12 @@ DHT11Data getDHT11Data();
 PlantowerData getPlantowerData();
 
 String csvFrame();
+String influxFrame();
+
 void save();
 int postCsvFile(String url, String filename);
 int postCsv(String url, String csv);
+int post2Influx(String url, String load);
 
 void ledParticulateQuality(PlantowerData data);
 

@@ -104,11 +104,13 @@ void loop() {
 
     if(plantower.ready) {
       plantowerData = plantower;
-      save();
     }
 
     if(plantowerData.ready) {
+      save();
       ledParticulateQuality(plantowerData);
+      String frame = influxFrame();
+      post2Influx("http://aqa.unloquer.org:8086/write?db=aqa", frame);
     }
   }
 
@@ -167,6 +169,56 @@ String csvFrame() {
   } else {
     frame += STR_NULL + STR_COMMA + STR_NULL + STR_COMMA + STR_NULL;
   }
+
+  return frame;
+}
+String influxFrame() {
+  /* CSV is ordered as:
+   "id","lat","lng","date","time","altitude","course","speed","humidity",
+   "temperature","pm1","pm25","pm10"
+  */
+
+  // First datum is the sensor_id
+  String frame = SENSOR_ID + STR_COMMA + "id=" + SENSOR_ID +  STR_SPACE;
+
+  // Add GPS data
+  char strlat[25],strlng[25];
+  dtostrf(gps.lat, 3, 6, strlat);
+  dtostrf(gps.lng, 3, 6, strlng);
+  frame += "lat=";
+  frame += strlat + STR_COMMA;
+  frame += "lng=";
+  frame += strlng + STR_COMMA;
+  //frame += gps.date + STR_COMMA;
+  //frame += gps.time + STR_COMMA;
+  frame += "altitude=";
+  frame += gps.altitude + STR_COMMA;
+  frame += "course=";
+  frame += gps.course + STR_COMMA;
+  frame += "speed=";
+  frame += gps.speed + STR_COMMA;
+
+  //Add DHT11 data
+  //if
+    frame += "humidity=";
+    frame += dht11.humidity + STR_COMMA;
+    frame += "temperature=";
+    frame += dht11.temperature + STR_COMMA;
+  // } else {
+  //   frame += "humidity=" + STR_NULL + STR_COMMA + "temperature=" + STR_NULL + STR_COMMA;
+  // }
+
+  // Add Plantower data
+    // if
+    frame += "pm1=";
+    frame += plantower.pm1 + STR_COMMA;
+    frame += "pm25=";
+    frame += plantower.pm25 + STR_COMMA;
+    frame += "pm10=";
+    frame += plantower.pm10;
+  // } else {
+  //   frame += "pm1=" + STR_NULL + STR_COMMA + "pm25=" + STR_NULL + STR_COMMA + "pm10=" + STR_NULL;
+  // }
 
   return frame;
 }
